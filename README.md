@@ -3,10 +3,11 @@ This plugin will automatically start recording SourceTV demos upon cheater detec
 
 Little Anti-Cheat: https://github.com/J-Tanzanite/Little-Anti-Cheat
 
-## Note:
-This plugin is not officially done, and this is just a release candidate.\
-Don't expect this plugin to be stable, I haven't done major testing with it yet.
+## Configuration:
+This plugin will automatically generate a file when loaded, to **cfg/sourcemod/lilac_sourcetv.cfg**\
+You can change settings there.
 
-
-## Suggestions and feedback is welcome :)
-Just raise an issue if you have any requests or bugs to be reported.
+**lilac_stv_enable**: Enables and disables auto recording.\
+**lilac_stv_autojoin**: Automatically restart the map if SourceTV bot is missing.\
+**lilac_stv_log**: Log to **addons/sourcemod/logs/lilac_stv.log** when players are added & removed from a recording.\
+**lilac_stv_tickrate**: Set the SourceTV demo tickrate to the most optimal settings for best quality recordings.
