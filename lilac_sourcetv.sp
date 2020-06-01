@@ -32,7 +32,7 @@ public Plugin:myinfo = {
 	name = "[Lilac] Auto SourceTV Recorder",
 	author = "J_Tanzanite",
 	description = "Automatically records SourceTV demos upon cheater detection.",
-	version = "1.0.0-RC 1",
+	version = "1.0.0",
 	url = ""
 };
 
@@ -59,6 +59,8 @@ public void OnPluginStart()
 		HookConVarChange(cvar[i], cvar_change);
 	}
 
+	AutoExecConfig(true, "lilac_sourcetv", "sourcemod");
+
 	// SourceTV must be enabled.
 	if ((tcvar = FindConVar("tv_enable")) == null) {
 		ThrowError("[Lilac SourceTV] ERROR: ConVar \"tv_enable\" not found!");
@@ -74,7 +76,7 @@ public void OnPluginStart()
 	}
 	else {
 		if (GetConVarInt(tcvar))
-			ServerCommand("tv_stoprecord");
+			lilac_stop_recording();
 
 		SetConVarInt(tcvar, 0, false, false);
 		HookConVarChange(tcvar, cvar_lock);
@@ -90,8 +92,8 @@ public void OnPluginStart()
 
 public void OnPluginEnd()
 {
-	ServerCommand("tv_stoprecord");
-	stv_recording = false;
+	lilac_stop_recording_log();
+	lilac_stop_recording();
 }
 
 public void OnMapStart()
@@ -108,14 +110,13 @@ public void OnMapStart()
 		CreateTimer(10.0, timer_restart_map);
 
 	// Not needed, but just in case.
-	ServerCommand("tv_stoprecord");
-	stv_recording = false;
+	lilac_stop_recording();
 }
 
 public void OnMapEnd()
 {
-	ServerCommand("tv_stoprecord");
-	stv_recording = false;
+	lilac_stop_recording_log();
+	lilac_stop_recording();
 }
 
 // This just feels wrong...
@@ -215,13 +216,8 @@ void update_recording_list(int client, bool status)
 	if (players == 0 && stv_recording) {
 		// Stop recording.
 		log_client_status(client, prevstatus, status);
-		ServerCommand("tv_stoprecord");
-		stv_recording = false;
-
-		if (icvar[CVAR_LOG]) {
-			Format(line, sizeof(line), "Ended recording.");
-			log_line(2);
-		}
+		lilac_stop_recording_log();
+		lilac_stop_recording();
 
 		// Don't log the player being removed twice.
 		return;
@@ -278,6 +274,23 @@ void log_line(int newlines)
 
 	WriteFileLine(file, "%s", line);
 	CloseHandle(file);
+}
+
+void lilac_stop_recording_log()
+{
+	if (!icvar[CVAR_LOG] || !icvar[CVAR_ENABLE] || !stv_recording)
+		return;
+
+	Format(line, sizeof(line), "Ended recording.");
+	log_line(2);
+}
+
+// Note: lilac_stop_recording_log() should be called first
+// 	if you wanna log the end of a recording.
+void lilac_stop_recording()
+{
+	ServerCommand("tv_stoprecord");
+	stv_recording = false;
 }
 
 int get_sourcetv_bot()
