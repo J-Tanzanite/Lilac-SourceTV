@@ -32,7 +32,7 @@ public Plugin:myinfo = {
 	name = "[Lilac] Auto SourceTV Recorder",
 	author = "J_Tanzanite",
 	description = "Automatically records SourceTV demos upon cheater detection.",
-	version = "1.0.0",
+	version = "1.1.0",
 	url = ""
 };
 
@@ -62,8 +62,8 @@ public void OnPluginStart()
 	AutoExecConfig(true, "lilac_sourcetv", "sourcemod");
 
 	// SourceTV must be enabled.
-	if ((tcvar = FindConVar("tv_enable")) == null) {
-		ThrowError("[Lilac SourceTV] ERROR: ConVar \"tv_enable\" not found!");
+	if ((tcvar = FindConVar("tv_enable")) == null){
+		SetFailState("ConVar \"tv_enable\" not found!");
 	}
 	else {
 		SetConVarInt(tcvar, 1, false, false);
@@ -72,7 +72,7 @@ public void OnPluginStart()
 
 	// Block auto-recording.
 	if ((tcvar = FindConVar("tv_autorecord")) == null) {
-		ThrowError("[Lilac SourceTV] ERROR: ConVar \"tv_autorecord\" not found!");
+		SetFailState("ConVar \"tv_autorecord\" not found!");
 	}
 	else {
 		if (GetConVarInt(tcvar))
@@ -295,11 +295,22 @@ void lilac_stop_recording()
 
 int get_sourcetv_bot()
 {
+	static int bot = -1;
+
+	if (bot != -1) {
+		// Check if this index is still valid.
+		if (is_player_valid(bot) && IsClientSourceTV(bot))
+			return bot;
+
+		bot = -1;
+	}
+
 	for (int i = 1; i <= MaxClients; i++) {
 		if (!is_player_valid(i) || !IsClientSourceTV(i))
 			continue;
 
-		return i;
+		bot = i;
+		return bot;
 	}
 
 	return -1;
