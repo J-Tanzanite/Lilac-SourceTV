@@ -1,6 +1,6 @@
 # Little Anti-Cheat - SourceTV
 This plugin will automatically start recording SourceTV demos upon cheater detections by **Little Anti-Cheat**.
-**
+
 ### Requirements:
 - **Little Anti-Cheat:** https://github.com/J-Tanzanite/Little-Anti-Cheat
 
